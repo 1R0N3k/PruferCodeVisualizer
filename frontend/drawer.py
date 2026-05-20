@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QLineF
 from PyQt6.QtGui import QPen, QBrush, QPainter, QColor, QTransform
 
+from algorithm.prufer_code import PruferAlgorithm
+
 # ========================
 # 🟢 Элементы графа
 # ========================
@@ -196,6 +198,12 @@ class MainWindow(QMainWindow):
         self.view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
         self.view.setStyleSheet("background: #ffffff; border: 1px solid #ccc;")
 
+        # ✅ ЛЕНИВЫЙ ИМПОРТ (разрывает цикл)
+        from frontend.prufer_animator import PruferPanel
+        self.prufer_panel = PruferPanel(self.scene)
+        left_layout.insertWidget(1, self.prufer_panel)
+
+        self.clear_btn.clicked.connect(self.scene.clear_all)
         self.scene.status_callback = self.status_label.setText
 
         splitter.addWidget(left_panel)
@@ -207,9 +215,3 @@ class MainWindow(QMainWindow):
         self.clear_btn.clicked.connect(self.scene.clear_all)
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setStyle("Fusion")
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
