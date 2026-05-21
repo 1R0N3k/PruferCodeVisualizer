@@ -62,25 +62,25 @@ class GraphScene(QGraphicsScene):
                 if self.first_vertex is None:
                     self.first_vertex = item
                     item.highlight()
-                    self._emit_status("✅ Вершина выбрана. Кликните по второй, чтобы создать ребро.")
+                    self._emit_status("Вершина выбрана. Кликните по второй, чтобы создать ребро.")
                 elif item != self.first_vertex:
                     self.create_edge(self.first_vertex, item)
                     self.first_vertex.unhighlight()
                     self.first_vertex = None
-                    self._emit_status("🔗 Ребро создано.")
+                    self._emit_status("Ребро создано.")
                 else:
                     self.first_vertex.unhighlight()
                     self.first_vertex = None
-                    self._emit_status("🖱️ Режим создания рёбер отменён.")
+                    self._emit_status("Режим создания рёбер отменён.")
             elif isinstance(item, EdgeItem):
-                self._emit_status("⚠️ ЛКМ по ребру игнорируется. Используйте ПКМ для удаления.")
+                self._emit_status("ЛКМ по ребру игнорируется. Используйте ПКМ для удаления.")
             else:
                 if self.first_vertex:
                     self.first_vertex.unhighlight()
                     self.first_vertex = None
-                    self._emit_status("🖱️ Режим создания рёбер отменён.")
+                    self._emit_status("Режим создания рёбер отменён.")
                 self.create_vertex(pos)
-                self._emit_status("🟦 Вершина создана.")
+                self._emit_status("Вершина создана.")
             event.accept()
 
         elif event.button() == Qt.MouseButton.RightButton:
@@ -89,9 +89,9 @@ class GraphScene(QGraphicsScene):
                 self._emit_status("🗑️ Вершина и её рёбра удалены.")
             elif isinstance(item, EdgeItem):
                 self.delete_edge(item)
-                self._emit_status("🗑️ Ребро удалено.")
+                self._emit_status("Ребро удалено.")
             else:
-                self._emit_status("⚠️ ПКМ работает только по вершинам и рёбрам.")
+                self._emit_status("ПКМ работает только по вершинам и рёбрам.")
             event.accept()
         else:
             super().mousePressEvent(event)
@@ -132,7 +132,7 @@ class GraphScene(QGraphicsScene):
         self.edges.clear()
         self.first_vertex = None
         self.vertex_count = 0
-        self._emit_status("🧹 Граф полностью очищен.")
+        self._emit_status("Граф полностью очищен.")
 
     def _emit_status(self, msg):
         if self.status_callback:
@@ -141,7 +141,7 @@ class GraphScene(QGraphicsScene):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("📐 Интерактивный редактор графов")
+        self.setWindowTitle("Интерактивный редактор графов")
         self.resize(950, 650)
 
         central = QWidget()
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
         left_layout = QVBoxLayout(left_panel)
         left_layout.setContentsMargins(15, 15, 15, 15)
 
-        self.clear_btn = QPushButton("🗑 Удалить весь граф")
+        self.clear_btn = QPushButton("Удалить весь граф")
         self.clear_btn.setStyleSheet("font-size: 14px; padding: 10px; background: #ff6b6b; color: white; border: none; border-radius: 4px;")
         left_layout.addWidget(self.clear_btn)
 
