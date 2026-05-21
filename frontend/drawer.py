@@ -9,9 +9,6 @@ from PyQt6.QtGui import QPen, QBrush, QPainter, QColor, QTransform
 
 from algorithm.prufer_code import PruferAlgorithm
 
-# ========================
-# 🟢 Элементы графа
-# ========================
 class VertexItem(QGraphicsEllipseItem):
     def __init__(self, pos, label):
         super().__init__(-15, -15, 30, 30)
@@ -46,10 +43,6 @@ class EdgeItem(QGraphicsLineItem):
         self.v2 = v2
         self.setZValue(0)
 
-
-# ========================
-# 🌐 Сцена графа
-# ========================
 class GraphScene(QGraphicsScene):
     def __init__(self):
         super().__init__()
@@ -145,10 +138,6 @@ class GraphScene(QGraphicsScene):
         if self.status_callback:
             self.status_callback(msg)
 
-
-# ========================
-# 🖥️ Главное окно
-# ========================
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -160,7 +149,7 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(central)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.status_label = QLabel("🖱️ ЛКМ по пустому месту: создать вершину | ЛКМ+ЛКМ: соединить | ПКМ: удалить")
+        self.status_label = QLabel("ЛКМ по пустому месту: создать вершину | ЛКМ+ЛКМ: соединить | ПКМ: удалить")
         self.status_label.setStyleSheet("background: #f8f9fa; color: #333; padding: 8px; border-bottom: 2px solid #dee2e6; font-weight: bold;")
         main_layout.addWidget(self.status_label)
 
@@ -186,7 +175,9 @@ class MainWindow(QMainWindow):
         self.view.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
         self.view.setStyleSheet("background: #ffffff; border: 1px solid #ccc;")
 
-        # ✅ ЛЕНИВЫЙ ИМПОРТ (разрывает цикл)
+
+
+
         from frontend.prufer_animator import PruferPanel
         self.prufer_panel = PruferPanel(self.scene)
         left_layout.insertWidget(1, self.prufer_panel)

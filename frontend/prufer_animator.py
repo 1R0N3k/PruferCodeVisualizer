@@ -45,15 +45,21 @@ class PruferAnimator:
     def decode(self):
         if self.running: return
         text, ok = QInputDialog.getText(None, "Декодирование", "Введите код Прюфера через запятую (напр.: V3,V1,V4):")
-        if not ok or not text.strip(): return
+
+        if not ok or not text.strip(): 
+            QMessageBox.warning(None, "Валидация кода", "Пустая строка! Введите код Прюфера по примеру.")
+            return
 
         seq = [s.strip() for s in text.split(",") if s.strip()]
         self.log.clear()
         self._log(f"🔓 Декодирование: {seq}", "#8e44ad")
 
         algo = PruferAlgorithm([], [])
-        labels, steps = algo.decode(seq)
-
+        try:
+            labels, steps = algo.decode(seq)
+        except TypeError:
+            QMessageBox.warning(None, "Валидация кода", "Ошибка декодирования!")
+            return
         # 1. Извлекаем будущие рёбра из шагов анимации, чтобы понять структуру дерева
         # Ищем все шаги типа 'add_e', где указаны вершины u и v
         future_edges = [(s["u"], s["v"]) for s in steps if s.get("type") == "add_e"]

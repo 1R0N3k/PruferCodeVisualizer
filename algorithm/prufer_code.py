@@ -35,10 +35,9 @@ class PruferAlgorithm:
 
         if len(visited) != len(self.vertices):
             return False, "Граф несвязный. Код Прюфера применим только к деревьям."
-        return True, "✅ Граф валиден. Это дерево."
+        return True, "Граф валиден. Это дерево."
 
     def encode(self) -> Tuple[List[str], List[Dict[str, Any]]]:
-        """Возвращает (последовательность_прюфера, шаги_анимации)"""
         adj = {v: set() for v in self.vertices}
         for u, v in self.edges:
             adj[u].add(v)
@@ -70,7 +69,6 @@ class PruferAlgorithm:
         return sequence, steps
 
     def decode(self, sequence: List[str]) -> Tuple[List[str], List[Dict[str, Any]]]:
-        """Возвращает (список_всех_меток, шаги_анимации)"""
         n = len(sequence) + 2
         steps = []
 
