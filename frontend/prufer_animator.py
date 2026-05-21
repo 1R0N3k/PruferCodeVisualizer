@@ -52,16 +52,99 @@ class PruferAnimator:
         self._log(f"🔓 Декодирование: {seq}", "#8e44ad")
 
         algo = PruferAlgorithm([], [])
-        labels, self.steps = algo.decode(seq)
+        labels, steps = algo.decode(seq)
 
-        # Подготовка сцены
+        # 1. Извлекаем будущие рёбра из шагов анимации, чтобы понять структуру дерева
+        # Ищем все шаги типа 'add_e', где указаны вершины u и v
+        future_edges = [(s["u"], s["v"]) for s in steps if s.get("type") == "add_e"]
+
+        # 2. Вычисляем древовидную раскладку координат
+        pos_map = self._calculate_tree_layout(labels, future_edges)
+
+        # 3. Создаём вершины сразу на правильных местах
         self.scene.clear_all()
-        for i, lbl in enumerate(labels):
-            self.scene.create_vertex((i * 70 + 50, 300))
-            self.scene.vertices[-1].label_text = lbl  # переопределяем метку
-            self.scene.vertices[-1].update()
+        for lbl in labels:
+            # drawer.py сам преобразует кортеж в QPointF, если мы сделали фикс из прошлого шага
+            self.scene.create_vertex(pos_map[lbl])
+            
+            # Переопределяем метку (create_vertex создает V1, V2...)
+            v = self.scene.vertices[-1]
+            v.label_text = lbl  
+            v.update()
 
+        self.steps = steps
         self._start()
+    
+    def _calculate_tree_layout(self, labels, edges):
+        """
+        Вычисляет координаты (x, y) для вершин, чтобы образовать дерево.
+        """
+        # Строим граф смежности
+        adj = {v: [] for v in labels}
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+
+        # Выбираем корень (вершина с максимальным числом связей)
+        root = max(adj, key=lambda x: len(adj[x]))
+
+        # Преобразуем в ориентированное дерево (Родитель -> Дети)
+        tree_adj = {v: [] for v in labels}
+        visited = {root}
+        queue = [root]
+        
+        while queue:
+            node = queue.pop(0)
+            for nb in adj[node]:
+                if nb not in visited:
+                    visited.add(nb)
+                    tree_adj[node].append(nb)
+                    queue.append(nb)
+
+        positions = {}
+        tree_width = 50  # Базовая ширина листа
+        vertical_spacing = 80
+
+        # Рекурсивная функция раскладки
+        def dfs(node, depth, start_x):
+            children = tree_adj[node]
+            
+            # Если лист
+            if not children:
+                positions[node] = (start_x, depth * vertical_spacing)
+                return start_x + tree_width
+
+            # Если есть дети, рекурсивно раскладываем их
+            current_x = start_x
+            child_xs = []
+            for child in children:
+                child_right_edge = dfs(child, depth + 1, current_x)
+                child_center_x = (current_x + child_right_edge) / 2
+                child_xs.append(child_center_x)
+                current_x = child_right_edge
+
+            # Родитель центрируется между первым и последним ребенком
+            parent_x = (child_xs[0] + child_xs[-1]) / 2
+            positions[node] = (parent_x, depth * vertical_spacing)
+            
+            return current_x
+
+        # Запускаем раскладку
+        total_width = dfs(root, 0, 50)
+
+        # Масштабируем дерево, чтобы оно влезало в экран (по центру)
+        scene_width = 800 
+        scale = (scene_width - 100) / total_width if total_width > 0 else 1
+        
+        # Центрируем по X (400 - середина сцены)
+        offset_x = 400 - (total_width * scale) / 2
+        
+        # Итоговые координаты
+        final_pos = {}
+        for lbl, (x, y) in positions.items():
+            final_pos[lbl] = (x * scale + offset_x, y + 50)
+            
+        return final_pos
 
     def _start(self):
         self.idx = 0
@@ -111,8 +194,10 @@ class PruferAnimator:
         elif t == "log":
             self._log(step["message"])
         elif t == "finish":
-            self._log(f"📦 Результат: {step['sequence']}", "#d35400")
+            result_code_string = step['sequence']
+            self._log(f"📦 Результат: {result_code_string}", "#d35400")
 
+    
 
 class PruferPanel(QWidget):
     """Виджет панели управления"""
