@@ -175,18 +175,6 @@ class MainWindow(QMainWindow):
         left_layout.addWidget(self.clear_btn)
 
         left_layout.addSpacing(10)
-        left_layout.addWidget(QLabel("🔧 Панель инструментов", styleSheet="font-weight: bold; margin-bottom: 5px;"))
-
-        self.placeholder = QLabel(
-            "📦 Зарезервировано для:\n"
-            "• Экспорт/Импорт (JSON, SVG)\n"
-            "• Настройка весов рёбер\n"
-            "• Запуск алгоритмов (BFS, DFS)\n"
-            "• Выбор цветовой схемы"
-        )
-        self.placeholder.setStyleSheet("background: #e9ecef; padding: 15px; border: 2px dashed #adb5bd; border-radius: 6px; font-size: 12px;")
-        left_layout.addWidget(self.placeholder)
-        left_layout.addStretch()
 
         left_panel.setMaximumWidth(240)
 
