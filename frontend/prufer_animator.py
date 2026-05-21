@@ -3,7 +3,7 @@ from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QBrush, QPen, QColor
 
 from algorithm.prufer_code import PruferAlgorithm
-from drawer import GraphScene, EdgeItem
+from frontend.drawer import GraphScene, EdgeItem
 
 class PruferAnimator:
     def __init__(self, scene: GraphScene, log_widget: QTextEdit):

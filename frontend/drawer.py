@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QWidget, QPushButton, QLabel, QSplitter,
     QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem
 )
-from PyQt6.QtCore import Qt, QLineF
+from PyQt6.QtCore import Qt, QLineF, QPointF
 from PyQt6.QtGui import QPen, QBrush, QPainter, QColor, QTransform
 
 from algorithm.prufer_code import PruferAlgorithm
@@ -15,7 +15,7 @@ from algorithm.prufer_code import PruferAlgorithm
 class VertexItem(QGraphicsEllipseItem):
     def __init__(self, pos, label):
         super().__init__(-15, -15, 30, 30)
-        self.setPos(pos)
+        self.setPos(QPointF(*pos) if isinstance(pos, (tuple, list)) else pos)
         self.setBrush(QBrush(QColor("lightblue")))
         self.setPen(QPen(QColor("black"), 2))
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
